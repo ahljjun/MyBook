@@ -6,13 +6,7 @@
 
 参考1进一步介绍了C++11后，这一问题的多种解决方式。 comments也提到了 陈硕书中指到过的利用 pthread\_once\(c++11 中std::once\_flag, std::call\_once\) 来保证初始化的唯一性。
 
-
-
 ### 实现\(TODO\)
-
-
-
-
 
 ### 参考
 
