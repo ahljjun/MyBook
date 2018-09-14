@@ -108,7 +108,9 @@ private:
 };
 ```
 
+但是以上方法仍然没办法保证后来的reader 或者 writer 先来后到的顺序。 一个比较好的改进是：加入 pendingReaders, pendingWriters计数 并用notify\_one 来保证顺序。
 
 
-但是以上方法仍然没办法
+
+
 
