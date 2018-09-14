@@ -110,7 +110,59 @@ private:
 
 但是以上方法仍然没办法保证后来的reader 或者 writer 先来后到的顺序。 一个比较好的改进是：加入 pendingReaders, pendingWriters计数 并用notify\_one 来保证顺序。
 
+```
+class RWLock {
+```
 
+```
+public:
+    RWLock(): nreaders(0) {}
+
+    void RLock() {
+        std::unique_lock<std::mutex> lk(mtx);
+        while(nreaders == -1) {
+            readCv.wait(&lk);
+        }
+
+        assert(nreaders>=0);
+        nreaders++;
+    }
+
+    void WLock() {
+        std::unique_lock<std::mutex> lk(mtx);
+        while(nreaders!=0) {
+            writeCv.wait(&lk);
+        }
+
+        assert(nreaders == 0);
+        nreaders = -1;
+    }
+
+    void RUnlock() {
+        std::lock_guard<std::mutex> lk(mtx);
+        assert(nreaders>0);
+        if ((--nreaders) == 0) 
+            writeCv.notify_one();
+    }
+
+    void WUnlock() {
+        std::lock_guard<std::mutex> lk(mtx);
+        assert(nreaders == -1);
+        nreaders = 0;
+
+        readCv.notify_all();
+    }
+
+private:
+    std::mutex mtx;
+    std::condition_variable readCv;
+    std::condition_variable writeCv;
+    int nreaders;
+    
+    int nPendingWriters;
+    int nPendingReaders;
+};
+```
 
 
 
