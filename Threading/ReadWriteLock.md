@@ -108,49 +108,63 @@ private:
 };
 ```
 
-但是以上方法仍然没办法保证后来的reader 或者 writer 先来后到的顺序。 一个比较好的改进是：加入 pendingReaders, pendingWriters计数 并用notify\_one 来保证顺序。
+但是以上方法仍然没办法保证后来的reader 或者 writer 先来后到的顺序。 一个比较好的改进是：加入 pendingReaders, pendingWriters计数 并用notify\_one 来保证顺序.
 
 ```
-class RWLock {
-```
-
-```
+class FairRWLock{
 public:
-    RWLock(): nreaders(0) {}
+    FairRWLock(): nreaders(0), nPendingWriters(0), nPendingReaders(0) {}
 
     void RLock() {
         std::unique_lock<std::mutex> lk(mtx);
-        while(nreaders == -1) {
-            readCv.wait(&lk);
+        nPendingReaders++;
+        
+        if (nPendingWriters > 0) {
+            // 有writer比此次reader先到， 允许且仅允许一个writer先进行
+            readCv.wait(lk); // wait will release the lock and writer lock will get it.
         }
-
+        
+        while(nreaders == -1) {
+            readCv.wait(lk);
+        }
+        
         assert(nreaders>=0);
+        nPendingReaders--;
         nreaders++;
+        
+        //allow one more reader to come in.
+        readCv.notify_one();
     }
 
     void WLock() {
         std::unique_lock<std::mutex> lk(mtx);
-        while(nreaders!=0) {
-            writeCv.wait(&lk);
+        nPendingWriters++;
+        
+        while(nreaders!=0) {  
+            writeCv.wait(lk);
         }
 
         assert(nreaders == 0);
+        nPendingWriters--;
         nreaders = -1;
     }
 
     void RUnlock() {
-        std::lock_guard<std::mutex> lk(mtx);
+        std::unique_lock<std::mutex> lk(mtx);
         assert(nreaders>0);
-        if ((--nreaders) == 0) 
-            writeCv.notify_one();
+        if ((--nreaders) == 0 && nPendingWriters > 0) 
+            writeCv.notify_one(); // wake one writer if needed.
     }
 
     void WUnlock() {
-        std::lock_guard<std::mutex> lk(mtx);
+        std::unique_lock<std::mutex> lk(mtx);
         assert(nreaders == -1);
         nreaders = 0;
-
-        readCv.notify_all();
+        
+        if (nPendingReaders > 0) // writer finish , let one reader come first
+            readCv.notify_one(); // wake one up , it will wake another read or writer.
+        else if (nPendingWriters > 0)
+            writeCv.notify_one();
     }
 
 private:
@@ -158,7 +172,7 @@ private:
     std::condition_variable readCv;
     std::condition_variable writeCv;
     int nreaders;
-    
+
     int nPendingWriters;
     int nPendingReaders;
 };
