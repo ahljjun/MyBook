@@ -1,8 +1,6 @@
 # CPP
 
-
-
-目标文件\(Object File/Executable File\)
+##### 目标文件\(Object File/Executable File\)
 
 ```
 int printf(const char* format, ...);
@@ -51,7 +49,6 @@ Idx Name          Size      VMA               LMA               File off  Algn
                   CONTENTS, READONLY
   6 .eh_frame     00000058  0000000000000000  0000000000000000  000000f8  2**3
                   CONTENTS, ALLOC, LOAD, RELOC, READONLY, DATA
- 
 ```
 
 **Size SimpleSection.o **
@@ -59,13 +56,11 @@ Idx Name          Size      VMA               LMA               File off  Algn
 ```
    text    data     bss     dec     hex filename
     194       8       4     206      ce SimpleSection.o
-    
 ```
 
 **objdump -s -d impleSection.o  //  -s: 将所有段内容按字符串打印出来   -d\(disassemble\): 将多有包含指令的段反汇编**
 
 ```
-
 SimpleSection.o:     file format elf64-x86-64
 
 Contents of section .text:
@@ -129,9 +124,7 @@ Disassembly of section .text:
   5c:   e8 00 00 00 00          callq  61 <main+0x40>
   61:   8b 45 fc                mov    -0x4(%rbp),%eax
   64:   c9                      leaveq 
-  65:   c3                      retq   
-   
-  
+  65:   c3                      retq
 ```
 
 .data : 保存一些已经初始化的全局静态变量和局部静态变量  
@@ -140,15 +133,17 @@ Disassembly of section .text:
 .init: 程序初始与终结代码段， C++全局构造与析构  
 
 
+##### 程序内存布局：
+
+图copy自https://blog.csdn.net/yusiguyuan/article/details/45155035\(侵删\)
+
+![](/assets/import.png)
 
 
 
+CallStack:
 
-
-
-
-
-
+![](/assets/Stackframe.png)
 
 
 
