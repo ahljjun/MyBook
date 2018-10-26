@@ -4,7 +4,7 @@
 
 Don’t communicate by sharing memory, share memory by communicating.
 
-通道：相当于FIFO的队列， 通道中的各个元素值都是严格地按照发送的顺序排列的，先被发送通道的元素值一定会先被接收。元素值的发送和接收都需要用到操作符 &lt;- 
+通道：相当于FIFO的队列， 通道中的各个元素值都是严格地按照发送的顺序排列的，先被发送通道的元素值一定会先被接收。元素值的发送和接收都需要用到操作符 &lt;-
 
 通道类型的值本身就是并发安全的.
 
@@ -23,6 +23,12 @@ Don’t communicate by sharing memory, share memory by communicating.
 
 * 除非有特殊的保障措施，千万不要让接收方关闭通道，而应当让发送方做这件事。
 * 使用make 初始化，var ch3 chan int 这种方式是nil的通道，发送/接收都会足赛
+
+
+
+
+
+### Atomic
 
 
 
