@@ -24,13 +24,12 @@ Don’t communicate by sharing memory, share memory by communicating.
 * 除非有特殊的保障措施，千万不要让接收方关闭通道，而应当让发送方做这件事。
 * 使用make 初始化，var ch3 chan int 这种方式是nil的通道，发送/接收都会足赛
 
-
-
-
-
 ### Atomic
 
+1. 互斥锁 仍然可能被中断， 虽然可以保证临界区中代码的串行执行，但却不能保证_这些_代码执行的原子性\(atomicity\) 原子操作的过程中是不允许中断的。 
+2.  因为原子操作不允许中断，这也要求原子操作要简单快速
 
+    sync/atomic 包 中包含的原子操作：
 
-
+加法\(add\),  比较并交换\(compare and swap,  CAS\)， 加载\(load\)，存储\(store\)和交换\(swap\)
 
