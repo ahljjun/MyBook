@@ -8,7 +8,7 @@ map的实现，store \(key, value\) pairs.
 
 * Hash Set
 
-set的实现，针对 no repeated values的设计
+set的实现，针对 no repeated values的设计.  value is key!!!!
 
 ##### The Principle of Hash Table
 
@@ -47,6 +47,10 @@ N is variable or large  ----&gt;  use  Height Balanced Binary Search Tree
 
 * Insertion 
 * Search 
+
+
+
+
 
 
 
